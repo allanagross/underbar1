@@ -111,6 +111,27 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
+     //let newArray = [];
+  //    var result = [];
+  //    // create a for loop to loop through array 
+  //   // for(let i = 0; i < array.length; i++){
+  //   //   if(iterator(array) === true){
+  //   //     result.push(array)
+  //   //   }
+  //   // }
+     
+  //    for (var i = 0; i < array.length; i++){
+  //     if(iterator){
+  //       if(iterator(array[i], i, array){
+  //         let newARr = iterator(array[i], i, array)
+  //         result.push(newARr);   
+  //       }
+        
+  //     } else if(_.indexOf(result,array[i]) === -1){
+  //          result.push(array[i]);
+  //      } 
+  //  } if(_.indexOf(result, ))
+  //  return result;
     
   };
 
@@ -120,6 +141,13 @@
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+    let newArray = []; 
+    _.each(collection, (e, i, collection) => {
+        let result = iterator(e, i, collection)
+        newArray.push(result)
+    })
+    return newArray;
+
   };
 
   /*
@@ -160,7 +188,28 @@
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
-  _.reduce = function(collection, iterator, accumulator) {
+
+  _.reduce = function(array, func, seed) {
+    let previousResult;
+    //create an if/else chain to determine if seed is given or not (undefined)
+    if (seed !== undefined) {
+    //if seed is given let it equal previousResult 
+        previousResult = seed;
+    //call the each function 
+    //each will pass every value in the array thru our reducer function (func)
+    _.each(array, function(e,i,a) {
+        previousResult = func(previousResult, e, i, a);
+    });
+    //if seed is not given, set it equal to the first value in the array
+    } else {
+        previousResult = array[0];
+    //instead of using each, use a for loop to iterate over the array
+        for (let i = 1; i < array.length; i++) {
+            previousResult = func(previousResult, array[i], i, array);
+            }
+        } 
+        return previousResult;
+    
 
   };
 
@@ -180,12 +229,22 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    iterator = iterator || _.identity;
+    return _.reduce(collection, function(isTrue, item){
+      return isTrue && Boolean(iterator(item));
+    }, true); 
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    iterator = iterator || _.identity
+    //will still iterate whether its true or false 
+    return !_.every(collection, function(item){
+      return !iterator(item)
+    })
+    
   };
 
 
@@ -208,6 +267,8 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    obj = this.obj
+    return obj
   };
 
   // Like extend, but doesn't ever overwrite a key that already
