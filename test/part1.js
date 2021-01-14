@@ -49,7 +49,7 @@
       });
 
       it('should accept an index argument', function() {
-        expect(_.last([1, 2, 3], 2)).to.eql([1, 2]);
+        expect(_.last([1, 2, 3], 2)).to.eql([2, 3]);
       });
 
       it('should return empty array if zero is passed in as the index', function() {
