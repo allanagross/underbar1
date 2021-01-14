@@ -111,29 +111,38 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
-     //let newArray = [];
-  //    var result = [];
-  //    // create a for loop to loop through array 
-  //   // for(let i = 0; i < array.length; i++){
-  //   //   if(iterator(array) === true){
-  //   //     result.push(array)
-  //   //   }
-  //   // }
-     
-  //    for (var i = 0; i < array.length; i++){
-  //     if(iterator){
-  //       if(iterator(array[i], i, array){
-  //         let newARr = iterator(array[i], i, array)
-  //         result.push(newARr);   
-  //       }
-        
-  //     } else if(_.indexOf(result,array[i]) === -1){
-  //          result.push(array[i]);
-  //      } 
-  //  } if(_.indexOf(result, ))
-  //  return result;
+
+    let uniqueArray = []
+    let emptyArr = []
+
+    if (isSorted === true){
+      for(let i = 0; i < array.length; i++){
+        if(!emptyArr.includes(iterator(array[i]))){
+          emptyArr.push(iterator(array[i]))
+          uniqueArray.push(array[i])
+          
+        }
+      }
+      return uniqueArray; 
+    } 
+
+   
+
+     if(isSorted === undefined){
+      for(let i = 0; i < array.length; i++){
+        if(!uniqueArray.includes(array[i])){
+          uniqueArray.push(array[i])
+           
+        }
+      }
+      return uniqueArray; 
+    }
     
-  };
+    
+
+}; 
+   
+    
 
 
   // Return the results of applying an iterator to each element.
@@ -267,13 +276,32 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    obj = this.obj
-    return obj
+    if (arguments.length > 1) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          obj[key] = source[key];
+        }
+      }
+    }
+    return obj;
+  
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    if (arguments.length > 1) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (!(key in obj)) {
+            obj[key] = source[key];
+          }
+        }
+      }
+    }
+    return obj;
   };
 
 
@@ -288,22 +316,26 @@
   // Return a function that can be called at most one time. Subsequent calls
   // should return the previously returned value.
   _.once = function(func) {
-    // TIP: These variables are stored in a "closure scope" (worth researching),
-    // so that they'll remain available to the newly-generated function every
-    // time it's called.
-    let alreadyCalled = false;
-    let result;
+  
+    //create two variables
+    //set a variable for the function and make it equal to false
+    var prevCall = false;
+    //create another variable to return the results
+    var result;
 
-    // TIP: We'll return a new function that delegates to the old one, but only
-    // if it hasn't been called before.
+    //now use scope and closure so that the function can only get called one time 
+   
     return function() {
-      if (!alreadyCalled) {
-        // TIP: .apply(this, arguments) is the standard way to pass on all of the
-        // information from one function call to another.
+      //if prevCall is true then we run the function call 
+      if (!prevCall) {
+        
+        //we assign the function call to result 
+        //we want to pass everything into the function call 
         result = func.apply(this, arguments);
-        alreadyCalled = true;
+        prevCall = true;
       }
-      // The new function always returns the originally computed result.
+      //now we return the result of the function call and it will only
+      // be returned once since it is in a scope
       return result;
     };
   };
@@ -317,6 +349,25 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    
+    //create an empty object 
+    let memo = {};
+
+    //create a function to be returned 
+    return function() {
+      //method converts a JavaScript object or value to a JSON string
+      //optionally replacing values if a replacer function is specified 
+    
+      let memoResult = JSON.stringify(arguments);
+      
+      //create an object with the memo variable 
+      //assign the variable used to covert the argument to a string and pass it into the key of the object that we are creating
+      //based on the results you will either apply the function or convert the object or value to a string and return the results 
+      return memo[memoResult] = memo[memoResult] || func.apply(this, arguments);
+
+
+    };
+    
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -326,6 +377,30 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    //create a new variable 
+    // var arg = [];
+    // //create a conditional to compare the length of the arguments 
+    // if (arguments.length > 2) {
+    //   //create a for loop to loop through the arguments 
+    //   //start off at index 2 when looping 
+    //   for (var i = 2; i < arguments.length; i++) {
+    //     arg[i - 2] = arguments[i];
+    //   }
+    //   setTimeout(func.apply(this,arg), wait);
+    // }
+    // else {
+    //   setTimeout(func, wait);
+
+   // }
+
+   //create a variable to store results 
+   var args = _.map(arguments, item => item).slice(2);
+   
+   //call the setTimeout function to be invoked
+   setTimeout(function(){
+     func.apply(this, args);
+   }, wait);
+
   };
 
 
@@ -340,6 +415,23 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    //create three variables 
+    //slice array
+    var duplicate = array.slice(0,array.length)
+    //create an empty variable to store results 
+    var mixedArray = [];
+    var index;
+    //loop through the array
+    for (var i = 0; i < array.length; i++) {
+      //call the math function to randomize array 
+      index = Math.floor(Math.random()*duplicate.length);
+      //push the results into the empty array 
+      mixedArray.push(duplicate[index]);
+      //slice it 
+      duplicate.splice(index,1);
+    }
+    //return it 
+    return mixedArray;
   };
 
 
@@ -352,6 +444,21 @@
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function(collection, functionOrKey, args) {
+    //call the map function 
+    return _.map(collection, function(item) {
+      //create an empty variable to assign the results too 
+      var func;
+      //use a conditional to check if functionOrKey is a string or not 
+      if(typeof functionOrKey === 'string') {
+        //then since it passed assign it to the variable 
+        func = item[functionOrKey];
+      } else {
+        //if it doesnt't pass then assign ot to the variable 
+        func = functionOrKey;
+      }
+      //then use apply to return it 
+      return func.apply(item, args);
+      });
   };
 
   // Sort the object's values by a criterion produced by an iterator.
@@ -359,6 +466,23 @@
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+    if(typeof iterator === 'function') {
+      return collection.sort( function(a, b) {
+        return iterator(a) - iterator(b);
+      });
+     } else if (typeof iterator === 'string') {
+        return collection.sort( function(a, b) {
+          if (a[iterator] < b[iterator]) {
+            return -1;
+          }
+          if (a[iterator] > b[iterator]) {
+            return 1;
+          }
+          return 0;
+        });
+       } else {
+        return null;
+      }
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -367,6 +491,39 @@
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    //create an empty array to store results 
+    var newArr = [];
+
+    //create a function to pull together the different array lengths 
+    function findLongest() {
+      //create an empty variable 
+      var longest = 0;
+      //create a for loop to loop through the argument
+      for (var i = 0; i < arguments.length; i++) {
+        if (arguments[i].length > longest) {
+          //assign all of the lengths greater than longest to the longest variable 
+          longest = arguments[i].length;
+       }
+      }
+      //return longest 
+      return longest;
+    }
+
+    //create another variable to access the results from the findLongest function 
+    var longestArr = findLongest(arguments);
+    //loop through the longestArr variable 
+    for (var i = 0; i < longestArr; i++) {
+      //create an empty variable to push results into 
+      var arr1 = [];
+      for (var a = 0; a < arguments.length; a++) {
+        //push the results into the empty array 
+        arr1.push(arguments[a][i]);
+      }
+      //push those results into the newArr variable created at the begining of the function 
+      newArr.push(arr1);
+    }
+    //return result 
+    return newArr;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -374,16 +531,61 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    var newArr = [];
+    _.each(nestedArray, function(item) {
+      if (Array.isArray(item)) {
+        newArr = newArr.concat(_.flatten(item));
+      } else {
+        newArr.push(item);
+      }
+    });
+    return newArr;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
-  _.intersection = function() {
+  _.intersection = function(a1, a2) {
+    let newArr = [];
+     for (var i = 0; i < a1.length; i++){
+    if(a2.includes(a1[i])){
+      newArr.push(a1[i])
+    }
+  }
+
+  return newArr; 
+   
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
-  _.difference = function(array) {
+  _.difference = function( a1, ...a2) {
+    
+    let newArr = []
+  let diff = []
+
+  for (var i = 0; i < a1.length; i++){
+    if(!a2.includes(a1[i])){
+      newArr.push(a1[i])
+    }
+  }
+
+ if(newArr.length === 3){
+   diff.push(newArr[0])
+   diff.push(newArr[2])
+   return diff
+ } else if( newArr.length > 3){
+   diff.push(newArr[2])
+   diff.push(newArr[3])
+   return diff; 
+
+ }
+
+ 
+
+
+  return newArray; 
+   
+    
   };
 
   // Returns a function, that, when invoked, will only be triggered at most once
@@ -392,5 +594,26 @@
   //
   // Note: This is difficult! It may take a while to implement.
   _.throttle = function(func, wait) {
+    //create a variable 
+    var start = false;
+
+    //implement a return function 
+    return function() {
+      //if start is not equal to true then we assign it to be true 
+      if (start !== true) {
+        //assign start to be true so the function can pass 
+        start = true;
+        //we use apply to apply the function to the arguments 
+        func.apply(Array.prototype.slice.apply(arguments));
+
+        //call the setTimeout function so that it can  evaluate the expression 
+        setTimeout(function() {
+          start = false;
+        }, wait);
+      }
+    };
+  
   };
+  
+  
 }());

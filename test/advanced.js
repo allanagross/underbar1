@@ -146,7 +146,7 @@
       it('should return the difference between three arrays', function() {
         const result = _.difference([1, 2, 3, 4], [2, 30, 40], [1, 11, 111]);
 
-        expect(result).to.eql([3, 4]);
+        expect(result).to.eql([ 3, 4]);
       });
 
     });
