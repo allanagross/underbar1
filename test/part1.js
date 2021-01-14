@@ -1,4 +1,4 @@
-3(function() {
+(function() {
   'use strict';
 
   describe('Part I', function() {
