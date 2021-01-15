@@ -319,7 +319,7 @@
   // Return a function that can be called at most one time. Subsequent calls
   // should return the previously returned value.
   _.once = function(func) {
-  
+    //referenced a few online sources 
     //create two variables
     //set a variable for the function and make it equal to false
     var prevCall = false;
@@ -620,3 +620,5 @@
   
   
 }());
+
+//referenced some online sources
